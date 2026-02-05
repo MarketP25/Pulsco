@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
-@Injectable()
-export class GlobalLoadBalancerService {
-  private planetaryRegions: Map<string, any> = new Map();
-  private activeConnections: Map<string, any> = new Map();
-  private loadMetrics: Map<string, any> = new Map();
-
-  constructor(private readonly kafkaClient: ClientKafka) {
-    this.initializePlanetaryRegions();
-    this.startHealthMonitoring();
-    this.startLoadBalancing();
-  }
-
+export interface LoadBalancingRequest {
+  service: string;
+  region?: string;
+  userLocation?: {
+    country: string;
+    region?: string;
+    city?: string;
+    coordinates?: [number, number];
+  };
+  priority: 'low' | 'normal' | 'high' | 'critical';
+  requirements?: {
+    minLatency?: number;
   /**
    * Planetary Load Balancing - Routes requests across 50+ global regions
    * Uses AI-driven algorithms for optimal distribution

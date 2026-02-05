@@ -1,0 +1,27 @@
+name: Billing Engine CI
+
+on:
+  push:
+    paths:
+      - 'packages/billing-engine/**'
+  pull_request:
+    paths:
+      - 'packages/billing-engine/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install
+        run: |
+          cd packages/billing-engine
+          npm install
+      - name: Run tests
+        run: |
+          cd packages/billing-engine
+          npm test

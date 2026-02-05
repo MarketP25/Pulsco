@@ -1,0 +1,83 @@
+groups:
+- name: localization_service_alerts
+  rules:
+  - alert: HighLatency
+    expr: histogram_quantile(0.95, rate(translation_latency_seconds_bucket[5m])) > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High translation latency detected"
+      description: "95th percentile latency > 2s for 5 minutes"
+
+  - alert: LowSuccessRate
+    expr: rate(translation_success_total[5m]) / rate(translation_requests_total[5m]) < 0.95
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Low translation success rate"
+      description: "Success rate < 95% for 5 minutes"
+
+  - alert: HighErrorRate
+    expr: rate(translation_errors_total[5m]) / rate(translation_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High translation error rate"
+      description: "Error rate > 5% for 5 minutes"
+
+  - alert: QueueDepthHigh
+    expr: translation_queue_depth > 500
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Translation queue depth is high"
+      description: "Queue depth > 500 for 10 minutes"
+
+  - alert: CacheHitRateLow
+    expr: rate(translation_cache_hits_total[5m]) / (rate(translation_cache_hits_total[5m]) + rate(translation_cache_misses_total[5m])) < 0.7
+    for: 15m
+    labels:
+      severity: info
+    annotations:
+      summary: "Low translation cache hit rate"
+      description: "Cache hit rate < 70% for 15 minutes"
+
+  - alert: ProviderFailure
+    expr: rate(translation_provider_failures_total[5m]) > 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Translation provider failure detected"
+      description: "Provider failures detected in the last 2 minutes"
+
+  - alert: ComplianceViolation
+    expr: rate(compliance_violations_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Compliance violation detected"
+      description: "Compliance violations detected"
+
+  - alert: DataResidencyViolation
+    expr: rate(data_residency_violations_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Data residency violation detected"
+      description: "Data residency violations detected"
+
+  - alert: ContentModerationHighRisk
+    expr: rate(content_moderation_high_risk_total[5m]) / rate(content_moderation_total[5m]) > 0.1
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High risk content moderation rate"
+      description: "High risk content > 10% for 10 minutes"

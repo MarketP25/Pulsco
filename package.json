@@ -7,11 +7,11 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarketP25/Pulse-Connect.git"
+    "url": "git+https://github.com/MarketP25/Pulsco.git"
   },
-  "homepage": "https://github.com/MarketP25/Pulse-Connect#readme",
+  "homepage": "https://github.com/MarketP25/Pulsco#readme",
   "bugs": {
-    "url": "https://github.com/MarketP25/Pulse-Connect/issues"
+    "url": "https://github.com/MarketP25/Pulsco/issues"
   },
   "keywords": [
     "location-intelligence",
@@ -29,7 +29,7 @@
     "monorepo",
     "pnpm-workspace"
   ],
-  "author": "Pulsco Development Team",
+  "author": "Market Pulse pro(MARP) Founders",
   "license": "ISC",
   "engines": {
     "node": ">=18.0.0",
@@ -145,7 +145,6 @@
     "@babel/preset-typescript": "^7.28.5",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
-    "@tailwindcss/postcss": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

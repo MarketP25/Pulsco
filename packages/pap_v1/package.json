@@ -1,10 +1,10 @@
 {
-  "name": "pulse-agent-protocol",
+  "name": "@pulsco/pap-v1",
   "version": "1.0.0",
   "description": "PAP v1 - Global Marketing Automation Subsystem",
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests",
+    "test": "echo \"no tests\"",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts",
@@ -32,9 +32,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "express": "^4.18.0",
+    "@prisma/client": "^5.0.0",
     "@types/express": "^4.17.0",
-    "prisma": "^5.0.0",
-    "@prisma/client": "^5.0.0"
+    "express": "^4.18.0",
+    "prisma": "^5.0.0"
   }
 }

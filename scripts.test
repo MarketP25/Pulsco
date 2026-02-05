@@ -1,0 +1,12 @@
+"scripts": {
+  "dev": "pnpm -r --parallel dev",
+
+  "test": "pnpm -r exec --workspace-root jest --passWithNoTests",
+
+  "test:ui": "pnpm --filter pulse-connect-ui exec --workspace-root jest --passWithNoTests",
+  "test:admin": "pnpm --filter pulse-connect-admin-ui exec --workspace-root jest --passWithNoTests",
+  "test:core": "pnpm --filter pulse-connect-core exec --workspace-root jest --passWithNoTests",
+  "test:pap": "pnpm --filter pap_v1 exec --workspace-root jest --passWithNoTests",
+
+  "ci": "pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+}

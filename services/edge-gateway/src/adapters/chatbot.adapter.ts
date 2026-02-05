@@ -1,30 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { SubsystemAdapter, AdapterResult, AdapterContext } from './subsystem-adapter.interface';
+import { ExecuteRequestDto } from '../dto/execute-request.dto';
 import { EdgeTelemetryService } from '../services/telemetry.service';
 import { AiRuleInterpreter } from '@/shared/lib/src/ai-rule-interpreter';
 
-export interface ChatbotRequest {
-  sessionId: string;
-  userId: string;
-  message: string;
-  context: any;
-  regionCode: string;
-  intent?: string;
-}
-
-export interface ChatbotResponse {
-  sessionId: string;
-  response: string;
-  allowed: boolean;
-  blockedReason?: string;
-  safetyFlags: string[];
-  confidence: number;
-  processingTime: number;
-}
-
 @Injectable()
-export class ChatbotAdapter {
+export class ChatbotAdapter implements SubsystemAdapter {
   private readonly logger = new Logger(ChatbotAdapter.name);
+  readonly subsystemType = 'chatbot';
 
   constructor(
     private readonly kafkaClient: ClientKafka,
@@ -33,9 +17,9 @@ export class ChatbotAdapter {
   ) {}
 
   /**
-   * Process chatbot interaction through Edge governance
+   * Execute chatbot operations under Edge governance
    */
-  async processChatbotRequest(request: ChatbotRequest): Promise<ChatbotResponse> {
+  async execute(request: ExecuteRequestDto, context: AdapterContext): Promise<AdapterResult> {
     const startTime = Date.now();
 
     try {

@@ -1,8 +1,23 @@
 packages:
+  # Public & user-facing applications
   - "apps/*"
+
+  # Core user interfaces
+  - "pulse-connect-ui"
+  - "pulse-connect-admin-ui"
+  - "pulse-connect-admin-ui/packages/*"   # Include nested packages like admin-admin-lifecycle
+
+  # Core platform engine
+  - "pulse-connect-core"
+
+  # Backend services & gateways
   - "services/*"
+  - "pulse-hosting-backend"
+
+  # Shared internal libraries
   - "packages/*"
+  - "shared/*"
+
+  # Domain-specific modules (if/when added)
   - "modules/*"
   - "integrations/*"
-  - "pulse-connect-core"
-  - "shared/*"

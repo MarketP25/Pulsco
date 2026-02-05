@@ -1,0 +1,74 @@
+groups:
+- name: matchmaking_service_alerts
+  rules:
+  - alert: HighMatchmakingLatency
+    expr: histogram_quantile(0.95, rate(matchmaking_request_duration_seconds_bucket[5m])) > 3
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High matchmaking latency detected"
+      description: "95th percentile matchmaking latency > 3s for 5 minutes"
+
+  - alert: LowMatchSuccessRate
+    expr: rate(matchmaking_success_total[5m]) / rate(matchmaking_requests_total[5m]) < 0.9
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Low matchmaking success rate"
+      description: "Matchmaking success rate < 90% for 5 minutes"
+
+  - alert: MatchmakingQueueHigh
+    expr: matchmaking_queue_depth > 100
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Matchmaking queue depth is high"
+      description: "Queue depth > 100 for 10 minutes"
+
+  - alert: LowMatchQuality
+    expr: rate(matchmaking_high_quality_matches_total[5m]) / rate(matchmaking_matches_total[5m]) < 0.7
+    for: 15m
+    labels:
+      severity: info
+    annotations:
+      summary: "Low match quality rate"
+      description: "High quality matches < 70% for 15 minutes"
+
+  - alert: DatabaseConnectionIssues
+    expr: rate(matchmaking_db_connection_errors_total[5m]) > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Database connection issues detected"
+      description: "Database connection errors > 5 in 5 minutes"
+
+  - alert: MatchmakingServiceDown
+    expr: up{job="matchmaking-service"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Matchmaking service is down"
+      description: "Matchmaking service has been down for 5 minutes"
+
+  - alert: HighErrorRate
+    expr: rate(matchmaking_errors_total[5m]) / rate(matchmaking_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High matchmaking error rate"
+      description: "Error rate > 5% for 5 minutes"
+
+  - alert: MatchmakingMemoryHigh
+    expr: matchmaking_memory_usage_percent > 85
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High matchmaking service memory usage"
+      description: "Memory usage > 85% for 10 minutes"

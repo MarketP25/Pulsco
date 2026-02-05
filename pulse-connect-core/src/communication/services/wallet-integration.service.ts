@@ -1,5 +1,10 @@
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2024-12-18.acacia", // Ensure this matches your Stripe API version
+});
 
 export interface CommunicationFeePolicy {
   id: string;
@@ -541,12 +546,30 @@ export class WalletIntegrationService {
       return { success: true, transaction_id: existing.rows[0].id };
     }
 
-    // Integrate with payment gateway here (Stripe/Adyen/etc), using traceId as idempotency key
-    // For now, simulate success
-    return {
-      success: true,
-      transaction_id: uuidv4()
-    };
+    try {
+      // Create a PaymentIntent to charge the user's payment method
+      const paymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: Math.round(amount * 100), // Stripe expects amounts in cents
+          currency: "usd",
+          payment_method: paymentMethodId,
+          confirm: true,
+          metadata: { userId, traceId },
+          return_url: "https://pulsco.com/payment/callback", // Required for certain payment methods
+        },
+        {
+          idempotencyKey: traceId, // Enforce idempotency at the gateway level
+        }
+      );
+
+      if (paymentIntent.status === "succeeded") {
+        return { success: true, transaction_id: paymentIntent.id };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error("Payment processing failed:", error);
+      return { success: false };
+    }
   }
 
   /**

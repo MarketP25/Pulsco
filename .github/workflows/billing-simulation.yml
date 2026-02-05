@@ -1,0 +1,70 @@
+name: Billing Engine Simulation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: billing_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build billing package
+        run: |
+          cd packages/billing-engine
+          pnpm run build
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do pg_isready -h 127.0.0.1 -p 5432 && break || sleep 2; done
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run migrations
+        run: |
+          cd packages/billing-engine
+          export DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5432/billing_test"
+          pnpm run migrate
+
+      - name: Run simulation
+        run: |
+          cd packages/billing-engine
+          export DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5432/billing_test"
+          export SIMULATE_FAST=1
+          pnpm run simulate
+
+      - name: Upload simulation outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-simulation-outputs
+          path: packages/billing-engine/outputs/**
+
+      - name: Upload ledger artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-simulation-ledger
+          path: packages/billing-engine/outputs/**

@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
+import { Injectable, NotFoundException, ConflictException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User, UserStatus } from "./user.entity";
 import { AccountHistory, AccountAction, ActorType } from "./account-history.entity";
 import { HashChain } from "@pulsco/shared-lib";
+import * as bcrypt from 'bcrypt';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 export interface CreateUserDto {
   email: string;
   phone?: string;
   region: string;
   policy_version: string;
+  password?: string;
 }
 
 export interface ModifyUserDto {
@@ -20,6 +24,13 @@ export interface ModifyUserDto {
 
 export interface DeleteUserDto {
   reason_code: string;
+  policy_version: string;
+}
+
+export interface RegisterUserDto {
+  email: string;
+  password; string;
+  region: string;
   policy_version: string;
 }
 
@@ -43,9 +54,12 @@ export class AccountsService {
       throw new ConflictException("User with this email already exists");
     }
 
+    const hashedPassword = dto.password ? await bcrypt.hash(dto.password, 10) : null;
+
     // Create user
     const user = this.userRepository.create({
       email: dto.email,
+      password_hash: hashedPassword,
       phone: dto.phone,
       region: dto.region,
       status: UserStatus.ACTIVE
@@ -64,6 +78,41 @@ export class AccountsService {
     );
 
     return savedUser;
+  }
+
+  async register(dto: RegisterUserDto): Promise<User> {
+    return this.createUser(dto);
+  }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async generateTwoFactorSecret(user: User) {
+    const secret = authenticator.generateSecret();
+    const otpauthUrl = authenticator.keyuri(user.email, 'Pulsco', secret);
+
+    await this.userRepository.update(user.id, { two_factor_secret: secret });
+
+    return {
+      secret,
+      otpauthUrl
+    }
+  }
+
+  async generateTwoFactorQrCode(otpauthUrl: string) {
+    return toDataURL(otpauthUrl);
+  }
+
+  async enableTwoFactorAuth(user: User) {
+    await this.userRepository.update(user.id, { two_factor_enabled: true });
+  }
+
+  isTwoFactorTokenValid(token: string, user: User) {
+    return authenticator.verify({
+      token,
+      secret: user.two_factor_secret,
+    });
   }
 
   async modifyUser(userId: string, dto: ModifyUserDto): Promise<User> {
