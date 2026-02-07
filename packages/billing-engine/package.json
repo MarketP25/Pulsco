@@ -13,15 +13,15 @@
     "migrate": "ts-node src/migrate.ts",
     "reconcile": "ts-node src/reconcile.ts",
     "simulate": "node dist/simulate.js",
-    "simulate:ci": "SIMULATE_FAST=1 node dist/simulate.js"
-    ,"policy:cli":"ts-node src/cli/policy.ts"
+    "simulate:ci": "SIMULATE_FAST=1 node dist/simulate.js",
+    "policy:cli": "ts-node src/cli/policy.ts"
   },
   "dependencies": {
     "express": "^4.18.2",
     "body-parser": "^1.20.2",
     "yargs": "^17.7.2",
     "cors": "^2.8.5",
-    "express-openapi-validator": "^4.14.0",
+    "express-openapi-validator": "4.13.9",
     "swagger-ui-express": "^4.6.3",
     "yamljs": "^0.3.0"
   },

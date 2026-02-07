@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import { Card, Button, Badge, Alert, LoadingSpinner } from '@pulsco/admin-ui-core'
+import { ProcurementCSIService } from '../services/csi'
 
 interface ProcurementMetrics {
-  vendorSLACompliance: number
-  partnershipRevenue: number
-  procurementCosts: number
-  vendorResponseTime: number
-  supplierDiversity: number
-  contractRenewals: number
+  vendorPerformance: number
+  contractCompliance: number
   costSavings: number
-  activeContracts: number
+  supplierDiversity: number
+  procurementCycleTime: number
+  vendorSLACompliance: number
+  riskAssessment: number
+  negotiationSuccess: number
+  supplyChainStability: number
+  procurementEfficiency: number
 }
 
 interface ProcurementAlert {
@@ -28,19 +31,45 @@ export default function ProcurementDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [metrics, setMetrics] = useState<ProcurementMetrics | null>(null)
   const [alerts, setAlerts] = useState<ProcurementAlert[]>([])
+  const [csiService] = useState(() => new ProcurementCSIService(null as any)) // TODO: Inject proper CSI client
 
   useEffect(() => {
     const loadProcurementData = async () => {
-      setTimeout(() => {
+      try {
+        // Load metrics from CSI
+        const csiMetrics = await csiService.fetchProcurementMetrics()
+
+        // Load anomalies from CSI
+        const csiAnomalies = await csiService.getProcurementAnomalies()
+
+        setMetrics(csiMetrics)
+
+        // Convert CSI anomalies to dashboard alerts
+        const dashboardAlerts = csiAnomalies.slice(0, 3).map((anomaly, index) => ({
+          id: (index + 1).toString(),
+          type: anomaly.severity as 'critical' | 'high' | 'medium' | 'low',
+          title: `Procurement Anomaly: ${anomaly.metric}`,
+          description: anomaly.description,
+          source: 'CSI Intelligence',
+          timestamp: anomaly.timestamp.toLocaleString(),
+          priority: anomaly.procurementImpact > 50000 ? 'High' : anomaly.procurementImpact > 25000 ? 'Medium' : 'Low'
+        }))
+
+        setAlerts(dashboardAlerts)
+      } catch (error) {
+        console.error('Failed to load CSI data:', error)
+        // Fallback to mock data if CSI fails
         setMetrics({
-          vendorSLACompliance: 94.2,
-          partnershipRevenue: 1250000,
-          procurementCosts: 450000,
-          vendorResponseTime: 2.1,
-          supplierDiversity: 67,
-          contractRenewals: 8,
+          vendorPerformance: 94.2,
+          contractCompliance: 98.5,
           costSavings: 125000,
-          activeContracts: 156
+          supplierDiversity: 67,
+          procurementCycleTime: 2.1,
+          vendorSLACompliance: 96.8,
+          riskAssessment: 2.3,
+          negotiationSuccess: 88.9,
+          supplyChainStability: 92.4,
+          procurementEfficiency: 87.6
         })
 
         setAlerts([
@@ -52,24 +81,15 @@ export default function ProcurementDashboard() {
             source: 'Contract Management',
             timestamp: '5 days ago',
             priority: 'High'
-          },
-          {
-            id: '2',
-            type: 'medium',
-            title: 'Vendor Performance Issue',
-            description: 'Payment processor SLA compliance dropped below 95%',
-            source: 'Vendor Analytics',
-            timestamp: '2 days ago',
-            priority: 'Medium'
           }
         ])
-
+      } finally {
         setIsLoading(false)
-      }, 2000)
+      }
     }
 
     loadProcurementData()
-  }, [])
+  }, [csiService])
 
   if (isLoading) {
     return (

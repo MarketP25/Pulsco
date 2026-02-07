@@ -1,7 +1,14 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+**/node_modules/        # catch nested node_modules in apps/packages/services
 
-# dependencies
-/node_modules
+# Package manager artifacts
+.pnpm-debug.log*
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Yarn / PnP
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,32 +17,45 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
+# Testing
+coverage/
+**/coverage/
 
-# next.js
-/.next/
-/out/
+# Next.js
+.next/
+out/
 
-# production
-/build
+# Production builds
+build/
+dist/
+**/build/
+**/dist/
 
-# misc
+# Misc
 .DS_Store
+Thumbs.db
 *.pem
 
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Env files (opt-in if needed)
 .env*
+.env.local
+.env.development
+.env.production
+.env.test
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp

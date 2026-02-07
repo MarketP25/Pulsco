@@ -4,7 +4,7 @@
   "description": "Unified PULSCO Portal - Single Entry Point for All Planetary Services",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "pnpm exec next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

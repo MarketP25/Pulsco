@@ -16,6 +16,7 @@ import { MarketingAdapter } from '../adapters/marketing.adapter';
 import { AiProgramsAdapter } from '../adapters/ai-programs.adapter';
 import { LocalizationAdapter } from '../adapters/localization.adapter';
 import { TranslationsAdapter } from '../adapters/translations.adapter';
+import { BillingAdapter } from '../adapters/billing.adapter';
 
 export interface AdapterRegistration {
   subsystem: string;
