@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "axios": "^0.24.0",
+    "axios": "^1.13.5",
     "pg": "^8.7.1"
   },
   "devDependencies": {

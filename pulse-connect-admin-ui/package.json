@@ -24,7 +24,7 @@
     "@pulsco/admin-shared-types": "workspace:*",
     "@pulsco/admin-ui-core": "workspace:*",
     "eventsource": "^2.0.2",
-    "next": "15.5.2",
+    "next": "15.5.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.0",
